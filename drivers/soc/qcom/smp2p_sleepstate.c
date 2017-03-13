@@ -18,9 +18,8 @@
 #include <linux/ipc_router.h>
 #include "smp2p_private.h"
 
-#define SET_DELAY (2 * HZ)
-#define PROC_AWAKE_ID 12 /* 12th bit */
-static int slst_gpio_base_id;
+int PROC_AWAKE_ID = 12; /* 12th bit */
+int slst_gpio_base_id;
 
 /**
  * sleepstate_pm_notifier() - PM notifier callback function.
