@@ -4071,7 +4071,6 @@ void asus_adapter_adc_work(struct work_struct *work)
 					usb_max_current = ICL_2000mA;
 					break;
 	 			}
-			break;
 		}
 
     	usb_max_current = ICL_3000mA;
@@ -4113,23 +4112,29 @@ void asus_insertion_initial_settings(struct smb_charger *chg)
 	u8 USBIN_cc;
         flag_repeat = 0;
 
-//No.1
-	rc = smblib_write(chg, PRE_CHARGE_CURRENT_CFG_REG, 0x06);                                        //reg=1060    0x03   75mA  gaiwei  0x06  150mA
-	if (rc < 0) {
-		dev_err(chg->dev, "Couldn't set default PRE_CHARGE_CURRENT_CFG_REG rc=%d\n", rc);
-	}
-//No.2
-	rc = smblib_write(chg, FAST_CHARGE_CURRENT_CFG_REG, 0x28);                                      //reg=1061      0x38 1475mA  gaiwei  0x28 1000mA
-	if (rc < 0) {
-		dev_err(chg->dev, "Couldn't set default FAST_CHARGE_CURRENT_CFG_REG rc=%d\n", rc);
-	}
-//No.3
-	rc = smblib_write(chg, FLOAT_VOLTAGE_CFG_REG, 0x73);                                                     //reg=1070    0x74  4.357v   gaiwei  0x73  4.35v
-	if (rc < 0) {
-		dev_err(chg->dev, "Couldn't set default FLOAT_VOLTAGE_CFG_REG rc=%d\n", rc);
-	}
-//No.4
-	rc = smblib_masked_write(chg, FVC_RECHARGE_THRESHOLD_CFG_REG,                    //reg=1081    0x58    4.147v
+	/* reg=1060, 0x03, 75mA, gaiwei, 0x06, 150mA */
+	rc = smblib_write(chg, PRE_CHARGE_CURRENT_CFG_REG, 0x06);
+	if (rc < 0)
+		dev_err(chg->dev,
+			"Couldn't set default PRE_CHARGE_CURRENT_CFG_REG rc=%d\n",
+			rc);
+
+	/* reg=1061, 0x38, 1475mA, gaiwei, 0x78, 3000mA */
+	rc = smblib_write(chg, FAST_CHARGE_CURRENT_CFG_REG, 0x78);
+	if (rc < 0)
+		dev_err(chg->dev,
+			"Couldn't set default FAST_CHARGE_CURRENT_CFG_REG rc=%d\n",
+			rc);
+
+	/* reg=1070, 0x74, 4.357v, gaiwei, 0x73, 4.35v */
+	rc = smblib_write(chg, FLOAT_VOLTAGE_CFG_REG, 0x73);
+	if (rc < 0)
+		dev_err(chg->dev,
+			"Couldn't set default FLOAT_VOLTAGE_CFG_REG rc=%d\n",
+			rc);
+
+	/* reg=1081, 0x58, 4.147v */
+	rc = smblib_masked_write(chg, FVC_RECHARGE_THRESHOLD_CFG_REG,
 			FVC_RECHARGE_THRESHOLD_MASK, 0x58);
 	if (rc < 0) {
 		dev_err(chg->dev, "Couldn't set default FVC_RECHARGE_THRESHOLD_CFG_REG rc=%d\n", rc);
