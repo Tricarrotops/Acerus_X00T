@@ -3890,11 +3890,17 @@ void asus_chg_flow_work(struct work_struct *work)
 #ifndef HQ_BUILD_FACTORY
 		rc = smblib_read(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG, &USBIN_1_cc);   //reg=1370
 		if (rc < 0)
-			printk("%s: Couldn't read fast_CURRENT_LIMIT_CFG_REG\n", __func__);
+
+			pr_err("%s: Couldn't read fast_CURRENT_LIMIT_CFG_REG\n",
+				__func__);
 #endif
-			set_icl = ICL_500mA;
-		rc = smblib_masked_write(smbchg_dev, USBIN_CURRENT_LIMIT_CFG_REG,
-			USBIN_CURRENT_LIMIT_MASK, set_icl);
+
+		set_icl = ICL_1500mA;
+
+		rc = smblib_masked_write(smbchg_dev,
+						USBIN_CURRENT_LIMIT_CFG_REG,
+						USBIN_CURRENT_LIMIT_MASK,
+						set_icl);
 		if (rc < 0)
 			printk("%s: Failed to set USBIN_CURRENT_LIMIT\n", __func__);
 		asus_smblib_rerun_aicl(smbchg_dev);
