@@ -146,8 +146,10 @@ static void asus_smblib_rerun_aicl(struct smb_charger *chg)
 			USBIN_AICL_EN_BIT, 0);
 	/* Add a delay so that AICL successfully clears */
 	msleep(50);
-	smblib_masked_write(chg, USBIN_AICL_OPTIONS_CFG_REG,                          //reg=1380   bit2=0     USBIN_AICL_EN=Enable
-			USBIN_AICL_EN_BIT, USBIN_AICL_EN_BIT);
+
+	/* reg=1380, bit2=0, USBIN_AICL_EN=enable */
+	smblib_masked_write(chg, USBIN_AICL_OPTIONS_CFG_REG,
+				USBIN_AICL_EN_BIT, 1);
 }
 extern struct wake_lock asus_chg_lock;
 void asus_smblib_stay_awake(struct smb_charger *chg)
@@ -3507,8 +3509,17 @@ static int SW_recharge(struct smb_charger *chg)
 
 	capacity = asus_get_prop_batt_capacity(smbchg_dev);
 
-	if (capacity <= 98 && termination_done) {                   //reg=1042    CHARGING_ENABLE_CMD  bit0=1    CHARGING_ENABLE_CMD_IS_ACTIVE
-		rc = smblib_masked_write(chg, CHARGING_ENABLE_CMD_REG, CHARGING_ENABLE_CMD_BIT, CHARGING_ENABLE_CMD_BIT);
+	pr_debug("%s: bat_capacity = %d, termination_reg = 0x%x\n", __func__,
+			capacity, termination_reg);
+
+	if (capacity <= 98 && termination_done) {
+		pr_info("will start SW_recharge\n");
+
+		/* reg=1042, CHARGING_ENABLE_CMD
+		 * bit0=1, CHARGING_ENABLE_CMD_IS_ACTIVE
+		 */
+		rc = smblib_masked_write(chg, CHARGING_ENABLE_CMD_REG,
+						CHARGING_ENABLE_CMD_BIT, 1);
 		if (rc < 0) {
 			CHG_DBG_E("%s: Couldn't write charging_enable\n", __func__);
 			return rc;
