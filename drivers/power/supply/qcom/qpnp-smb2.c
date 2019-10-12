@@ -48,8 +48,8 @@ static struct smb_params v1_params = {
 	.fcc			= {
 		.name	= "fast charge current",
 		.reg	= FAST_CHARGE_CURRENT_CFG_REG,
-		.min_u	= 4500000,
-		.max_u	= 4500000,
+		.min_u	= 3000000,
+		.max_u	= 3000000,
 		.step_u	= 0,
 	},
 	.fv			= {
@@ -133,7 +133,7 @@ static struct smb_params v1_params = {
 		.name	= "jeita fcc reduction",
 		.reg	= JEITA_CCCOMP_CFG_REG,
 		.min_u	= 0,
-		.max_u	= 500000,
+		.max_u	= 100000,
 		.step_u	= 0,
 	},
 	.freq_buck		= {
@@ -1160,11 +1160,7 @@ static int smb2_batt_set_prop(struct power_supply *psy,
 		chg->step_chg_enabled = !!val->intval;
 		break;
 	case POWER_SUPPLY_PROP_SW_JEITA_ENABLED:
-		if (chg->sw_jeita_enabled != (!!val->intval)) {
-			rc = smblib_disable_hw_jeita(chg, !!val->intval);
-			if (rc == 0)
-				chg->sw_jeita_enabled = !!val->intval;
-		}
+		rc = smblib_disable_hw_jeita(chg, !!val->intval);
 		break;
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
 		chg->batt_profile_fcc_ua = val->intval;
@@ -1192,6 +1188,7 @@ static int smb2_batt_set_prop(struct power_supply *psy,
 		rc = -EINVAL;
 	}
 
+	rc = smblib_disable_hw_jeita(chg, !!val->intval);
 	return rc;
 }
 
@@ -1845,14 +1842,7 @@ static int smb2_init_hw(struct smb2 *chip)
 		}
 	}
 
-	if (chg->sw_jeita_enabled) {
-		rc = smblib_disable_hw_jeita(chg, true);
-		if (rc < 0) {
-			dev_err(chg->dev, "Couldn't set hw jeita rc=%d\n", rc);
-			return rc;
-		}
-	}
-
+	rc = smblib_disable_hw_jeita(chg, true);
 	return rc;
 }
 
