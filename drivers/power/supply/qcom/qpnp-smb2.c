@@ -29,7 +29,6 @@
 #include "storm-watch.h"
 #include <linux/pmic-voter.h>
 #include <linux/of_gpio.h>
-#include <linux/wakelock.h>
 #include <linux/uaccess.h>
 #include <linux/proc_fs.h>
 #include <asm-generic/errno-base.h>
@@ -193,7 +192,7 @@ struct smb2 {
 };
 struct smb_charger *smbchg_dev;
 struct timespec last_jeita_time;
-struct wake_lock asus_chg_lock;
+struct wakeup_source asus_chg_lock;
 extern void smblib_asus_monitor_start(struct smb_charger *chg, int time);
 extern bool asus_get_prop_usb_present(struct smb_charger *chg);
 extern void asus_smblib_stay_awake(struct smb_charger *chg);
@@ -2544,12 +2543,20 @@ static int smb2_probe(struct platform_device *pdev)
 	chg->mode = PARALLEL_MASTER;
 	chg->irq_info = smb2_irqs;
 	chg->name = "PMI";
-/* Realize jeita start */
-	wake_lock_init(&asus_chg_lock, WAKE_LOCK_SUSPEND, "asus_chg_lock");
-	smbchg_dev = chg;			//ASUS BSP add globe device struct +++
-/* Realize jeita end */
-	global_gpio = gpio_ctrl;	//ASUS BSP add gpio control struct +++
-	gpio_ctrl->ADC_SW_EN = of_get_named_gpio(pdev->dev.of_node, "ADC_SW_EN-gpios59", 0);
+
+#ifdef CONFIG_MACH_ASUS_X00T
+	wakeup_source_init(&asus_chg_lock, "asus_chg_lock");
+
+	/* ASUS BSP: add globe device struct */
+	smbchg_dev = chg;
+
+	/* ASUS BSP: add gpio control struct */
+	global_gpio = gpio_ctrl;
+
+	/* ASUS BSP: Request ADC_SW_EN-gpios59, ADCPWREN_PMI_GP1-gpios34 */
+	gpio_ctrl->ADC_SW_EN = of_get_named_gpio(pdev->dev.of_node,
+						"ADC_SW_EN-gpios59", 0);
+
 	rc = gpio_request(gpio_ctrl->ADC_SW_EN, "ADC_SW_EN-gpios59");
 	if (rc)
 		CHG_DBG_E("%s: failed to request ADC_SW_EN-gpios59\n", __func__);
