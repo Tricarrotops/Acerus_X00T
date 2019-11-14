@@ -155,11 +155,11 @@ static void asus_smblib_rerun_aicl(struct smb_charger *chg)
 extern struct wakeup_source asus_chg_lock;
 void asus_smblib_stay_awake(struct smb_charger *chg)
 {
-	__pm_stay_awake(&asus_chg_lock);
+	pm_stay_awake(&asus_chg_lock);
 }
 void asus_smblib_relax(struct smb_charger *chg)
 {
-	__pm_relax(&asus_chg_lock);
+	pm_relax(&asus_chg_lock);
 }
 
 static bool is_secure(struct smb_charger *chg, int addr)
@@ -1219,10 +1219,11 @@ static int smblib_awake_vote_callback(struct votable *votable, void *data,
 {
 	struct smb_charger *chg = data;
 
-	if (awake)
-		pm_wakeup_event(chg->dev, 500);
-	else
+	if (awake) {
+		pm_stay_awake(chg->dev);
+	} else {
 		pm_relax(chg->dev);
+	}
 
 	return 0;
 }
