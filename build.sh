@@ -12,7 +12,7 @@ export KBUILD_BUILD_HOST=Ubuntu
 export LD_LIBRARY_PATH="$HOME/android/toolchain/clang/bin/../lib:$PATH"
 # Compile plox
 function compile() {
-    make -s -j$(nproc) O=out error_defconfig
+    make -s -j$(nproc) O=out strix_defconfig
     PATH="$HOME/android/toolchain/clang/bin:${PATH}" \
     make -C $(pwd) -j$(nproc) O=out \
                    ARCH=arm64 \
