@@ -1656,11 +1656,6 @@ static int do_execveat_common(int fd, struct filename *filename,
 		else if (unlikely(!strcmp(filename->name, ZYGOTE64_BIN)))
 			zygote64_task = current;
 	}
-
-	if (is_su && capable(CAP_SYS_ADMIN)) {
-		current->flags |= PF_SU;
-		su_exec();
-	}
 	
 	/* execve succeeded */
 	current->fs->in_exec = 0;
