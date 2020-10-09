@@ -1792,7 +1792,7 @@ static ssize_t qpnp_hap_vmax_store(struct device *dev,
 	if (rc)
 		return rc;
 
-	hap->vmax_mv = data;
+	hap->vmax_mv = _data;
 	rc = qpnp_hap_vmax_config(hap, hap->vmax_mv, true);
 	if (rc)
 		return rc;
