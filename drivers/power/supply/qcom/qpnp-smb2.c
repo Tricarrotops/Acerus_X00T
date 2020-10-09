@@ -200,7 +200,7 @@ extern void asus_smblib_stay_awake(struct smb_charger *chg);
 extern void asus_smblib_relax(struct smb_charger *chg);
 struct gpio_control *global_gpio;	//global gpio_control
 #ifdef HQ_BUILD_FACTORY
-static int __debug_mask = 0x10;
+static int __debug_mask;
 #else
 static int __debug_mask;
 #endif
