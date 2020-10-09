@@ -649,6 +649,8 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 {
 	int rc = 0;
 	int64_t temp;
+	u8 buf[2];
+	
 	struct qpnp_vadc_result result;
 
 	chip->vadc_dev = qpnp_get_vadc(chip->dev, "vadc_therm");

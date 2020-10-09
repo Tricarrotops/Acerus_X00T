@@ -2582,6 +2582,8 @@ static int smb2_probe(struct platform_device *pdev)
 	}
 	rc = gpio_get_value(gpio_ctrl->ADCPWREN_PMI_GP1);
 	CHG_DBG("ADCPWREN_PMI_GP1 init H/L %d\n",rc);
+#endif /* CONFIG_MACH_ASUS_X00T */	
+
 //ASUS BSP : Request Request ADC_SW_EN-gpios59, ADCPWREN_PMI_GP1-gpios34 ---
 /* Adapter ID end */
 	chg->regmap = dev_get_regmap(chg->dev->parent, NULL);

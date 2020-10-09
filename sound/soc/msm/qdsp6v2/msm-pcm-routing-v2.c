@@ -16928,8 +16928,6 @@ static const int slim0_rx_vi_fb_tx_rch_value[] = {
 };
 
 static const int mi2s_rx_vi_fb_tx_value[] = {
-
-#ifdef CONFIG_MACH_ASUS_X00T
 	MSM_BACKEND_DAI_MAX, MSM_BACKEND_DAI_TERTIARY_MI2S_TX
 };
 
