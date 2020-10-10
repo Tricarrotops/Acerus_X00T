@@ -662,11 +662,18 @@ static int fg_get_battery_temp(struct fg_chip *chip, int *val)
 		return rc;
 	}
 
-	temp = ((buf[1] & BATT_TEMP_MSB_MASK) << 8) |
-		(buf[0] & BATT_TEMP_LSB_MASK);
-	/* Value is in 0.25Kelvin; Convert it to deciDegC */
-	*val = DIV_ROUND_CLOSEST((temp - 273*4) * 10, 4);
-	return 0;
+
+	rc = qpnp_vadc_read(chip->vadc_dev, VADC_AMUX_THM3_PU2, &result);
+	if (!rc) {
+		temp = result.physical;
+		/* Value is in DegreeC; Convert it to deciDegC. */
+		temp = (temp * 10);
+		*val = temp;
+		return rc;
+	} else {
+		pr_err("Unable to read battery_temp\n");
+		return rc;
+	}
 }
 
 static int fg_get_battery_resistance(struct fg_chip *chip, int *val)
